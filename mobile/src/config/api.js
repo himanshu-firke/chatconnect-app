@@ -1,7 +1,19 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://10.28.125.29:3001/api';
+// Check if running in development or production
+const isDevelopment = typeof window !== 'undefined' && 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+export const API_BASE_URL = isDevelopment 
+  ? 'http://localhost:3001/api'
+  : 'https://chatconnect-app-j8zm.onrender.com/api';
+
+export const SOCKET_URL = isDevelopment
+  ? 'http://localhost:3001' 
+  : 'https://chatconnect-app-j8zm.onrender.com';
+
+console.log('API Configuration:', { API_BASE_URL, SOCKET_URL });
 
 // Create axios instance
 const api = axios.create({
