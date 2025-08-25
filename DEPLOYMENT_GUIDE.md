@@ -89,11 +89,53 @@ cp .env.example .env
 npm start
 ```
 
+## 📱 Taking Screenshots & Demo Video
+
+### Screenshots from Phone
+1. **Run your app on phone** using Expo Go
+2. **Take screenshots** of these screens:
+   - Login screen
+   - Registration screen  
+   - User list screen
+   - Chat interface
+   - Message sent (your messages on right)
+   - Message received (other's messages on left)
+
+3. **Save screenshots** with clear names:
+   ```
+   login-screen.png
+   register-screen.png
+   user-list-screen.png
+   chat-screen.png
+   message-sent.png
+   message-received.png
+   ```
+
+4. **Upload to GitHub:**
+   - Add screenshots to `/screenshots/` folder
+   - Commit and push to update README
+
+### Demo Video Recording
+1. **Use phone's screen recorder**
+2. **Record 5-minute walkthrough:**
+   - App startup & login
+   - User list navigation
+   - Real-time messaging
+   - Typing indicators
+   - Message receipts
+   - Key features demo
+
+3. **Upload video:**
+   - Google Drive (make public)
+   - YouTube (unlisted)
+   - Update README with video link
+
 ## 🎯 Demo Submission Checklist
 
 - [ ] Code pushed to GitHub
 - [ ] Repository is public
 - [ ] README.md is comprehensive
+- [ ] Screenshots added to README
 - [ ] Demo users are documented
 - [ ] All features working locally
 - [ ] Record demo video (≤5 minutes)

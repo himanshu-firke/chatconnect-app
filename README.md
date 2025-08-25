@@ -1,6 +1,24 @@
 # ChatConnect - Real-time 1:1 Chat Application
 
-A professional-grade real-time chat application built with React Native (frontend) and Node.js + Socket.IO (backend) for internship demonstration.
+A professional-grade real-time chat application built with React Native (frontend) and Node.js + Socket.IO (backend).
+
+## 📱 Screenshots
+
+### App Interface
+| Login Screen | User List | Chat Interface |
+|--------------|-----------|----------------|
+| ![Login](screenshots/login-screen.jpg) | ![Users](screenshots/user-list-screen.jpg) | ![Chat](screenshots/chat-screen.jpg) |
+
+### Key Features in Action
+| Registration | Message Sent | Message Received |
+|--------------|--------------|------------------|
+| ![Register](screenshots/register-screen.jpg) | ![Sent](screenshots/message-sent.jpg) | ![Received](screenshots/message-received.jpg) |
+
+## 🎥 Demo Video
+
+📹 **[Watch Demo Video](https://drive.google.com/file/d/19-fucab8qt__UG12QbpRpL7W2bXmA9U0/view?usp=sharing)**
+- All features demonstrated
+- Real-time messaging showcase
 
 ## 🚀 Features
 
@@ -284,7 +302,7 @@ Before deploying to GitHub, ensure:
    - Go to [GitHub.com](https://github.com) and create a new repository
    - Name it `chatconnect-app` or similar
    - **DO NOT** initialize with README (you already have one)
-   - Keep it **Public** for internship demonstration
+   - Keep it **Public** for easy sharing and collaboration
 
 3. **Connect Local to GitHub**
    ```bash
@@ -455,13 +473,12 @@ DEBUG=socket.io:* npm run dev
 ## 👨‍💻 Developer Information
 
 **Author:** Himanshu  
-**Purpose:** Internship Submission  
-**Deadline:** August 25, 2025  
-**Tech Stack:** React Native, Node.js, Express, Socket.IO, MongoDB
+**Tech Stack:** React Native, Node.js, Express, Socket.IO, MongoDB  
+**Features:** Real-time messaging, JWT authentication, user presence tracking
 
 ## 📄 License
 
-This project is created for internship demonstration purposes.
+This project demonstrates modern full-stack development practices.
 
 ---
 
@@ -500,4 +517,4 @@ This project is created for internship demonstration purposes.
 
 ---
 
-**🎉 Congratulations! You now have a fully functional, professional-grade chat application ready for your internship submission!**
+**🎉 Congratulations! You now have a fully functional, professional-grade chat application!**
