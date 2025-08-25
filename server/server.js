@@ -66,6 +66,20 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'ChatConnect API Server',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth/*',
+      users: '/api/users/*'
+    }
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
