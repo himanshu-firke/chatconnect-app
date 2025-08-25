@@ -16,7 +16,8 @@ A professional-grade real-time chat application built with React Native (fronten
 
 ## 🎥 Demo Video
 
-📹 **[Watch Demo Video](https://drive.google.com/file/d/19-fucab8qt__UG12QbpRpL7W2bXmA9U0/view?usp=sharing)**
+📹 **[Watch Demo Video](https://drive.google.com/file/d/19-fucab8qt__UG12QbpRpL7W2bXmA9U0/preview)** 
+> *Click to play directly in browser - no download required*
 - All features demonstrated
 - Real-time messaging showcase
 
