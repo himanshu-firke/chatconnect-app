@@ -6,12 +6,9 @@ startCommand = "cd server && npm start"
 restartPolicyType = "on_failure"
 
 [env]
-MONGODB_URI=mongodb+srv://himanshu:Himanshu06@cluster0.gjqrhqb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-
-# JWT Configuration
-JWT_SECRET=chatconnect_super_secret_jwt_key_2025_internship_demo
-JWT_EXPIRES_IN=7d
-JWT_REFRESH_EXPIRES_IN=30d
-
-# CORS Configuration
-ALLOWED_ORIGINS=http://localhost:3001,http://localhost:19006
+NODE_ENV = "production"
+MONGODB_URI = "mongodb+srv://himanshu:Himanshu06@cluster0.gjqrhqb.mongodb.net/chatconnect?retryWrites=true&w=majority&appName=Cluster0"
+JWT_SECRET = "chatconnect_super_secret_jwt_key_2025_internship_demo"
+JWT_EXPIRES_IN = "7d"
+JWT_REFRESH_EXPIRES_IN = "30d"
+ALLOWED_ORIGINS = "*"
