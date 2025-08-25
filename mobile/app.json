@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*.png",
+      "assets/*.jpg"
     ],
     "ios": {
       "supportsTablet": true
@@ -25,7 +26,6 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "output": "static"
     },
