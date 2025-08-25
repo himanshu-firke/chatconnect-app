@@ -1,0 +1,15 @@
+{
+  "name": "chatconnect-app",
+  "version": "1.0.0",
+  "description": "ChatConnect - Real-time chat application",
+  "scripts": {
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev",
+    "install-server": "cd server && npm install",
+    "install-mobile": "cd mobile && npm install",
+    "postinstall": "npm run install-server"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
