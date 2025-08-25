@@ -24,4 +24,4 @@ services:
     env: static
     rootDir: mobile
     buildCommand: npm install --legacy-peer-deps && npm run build
-    staticPublishPath: dist
+    staticPublishPath: web-build
