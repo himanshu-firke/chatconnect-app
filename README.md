@@ -483,39 +483,5 @@ This project demonstrates modern full-stack development practices.
 
 ---
 
-## 🎯 Demo Video Script
-
-**Suggested demo flow (≤5 minutes):**
-
-1. **Introduction** (30s)
-   - Show project structure
-   - Explain tech stack
-
-2. **Backend Demo** (60s)
-   - Start server
-   - Show API endpoints
-   - Demonstrate health check
-
-3. **Frontend Demo** (180s)
-   - App startup and authentication
-   - User registration/login
-   - User list with online status
-   - Real-time messaging
-   - Typing indicators
-   - Message receipts
-
-4. **Technical Highlights** (30s)
-   - Code quality
-   - Architecture
-   - Real-time features
-
-**Recording Tips:**
-- Use screen recording software
-- Test on multiple devices
-- Show real-time features clearly
-- Keep audio clear and concise
-- Include code walkthrough
-
----
 
 **🎉 Congratulations! You now have a fully functional, professional-grade chat application!**
