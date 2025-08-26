@@ -14,14 +14,13 @@ A professional-grade real-time chat application built with React Native (fronten
 |--------------|--------------|------------------|
 | ![Register](screenshots/register-screen.jpg) | ![Sent](screenshots/message-sent.jpg) | ![Received](screenshots/message-received.jpg) |
 
-## 🌐 Live Backend API
+## 🔗 Live Backend API
+**Backend URL:** https://chatconnect-app-j8zm.onrender.com/api
 
-🚀 **[Live API Server](https://chatconnect-app-j8zm.onrender.com)**
-
-**Test Endpoints:**
-- **Health Check:** [/health](https://chatconnect-app-j8zm.onrender.com/health)
-- **API Info:** [/](https://chatconnect-app-j8zm.onrender.com/)
-- **Demo Login:** POST `/api/auth/login` with `alice@chatconnect.demo` / `password123`
+### Demo Login Details
+- **Email:** alice@chatconnect.demo
+- **Password:** password123
+- **Alternative accounts:** bob@chatconnect.demo, charlie@chatconnect.demo, diana@chatconnect.demo, evan@chatconnect.demo
 
 ## 🎥 Demo Video
 

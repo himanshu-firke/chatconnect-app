@@ -21,7 +21,7 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006"],
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006", "http://10.28.125.29:3000", "http://10.28.125.29:19006"],
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -37,7 +37,7 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006"],
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006", "http://10.28.125.29:3000", "http://10.28.125.29:19006"],
   credentials: true
 }));
 
@@ -110,13 +110,15 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 10000;
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+server.listen(PORT, HOST, () => {
   console.log(`
 🚀 ChatConnect Server Started Successfully!
 📡 Server running on port ${PORT}
 🌍 Environment: ${process.env.NODE_ENV}
-📊 Health check: http://localhost:${PORT}/health
+📊 Health check: ${process.env.NODE_ENV === 'production' ? `https://chatconnect-app-j8zm.onrender.com/health` : `http://localhost:${PORT}/health`}
 🔌 Socket.IO ready for connections
   `);
 });

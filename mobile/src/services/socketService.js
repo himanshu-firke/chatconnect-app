@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SOCKET_URL } from '../config/api';
 
 class SocketService {
   constructor() {
@@ -15,7 +16,7 @@ class SocketService {
         throw new Error('No access token found');
       }
 
-      this.socket = io('http://10.28.125.29:3001', {
+      this.socket = io(SOCKET_URL, {
         auth: {
           token
         },

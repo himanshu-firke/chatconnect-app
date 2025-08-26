@@ -206,4 +206,75 @@ router.post('/logout', authenticateToken, async (req, res) => {
   }
 });
 
+// @route   POST /auth/seed-demo-users
+// @desc    Seed demo users (REMOVE IN PRODUCTION)
+// @access  Public
+router.post('/seed-demo-users', async (req, res) => {
+  try {
+    // Only allow in development or if specific key is provided
+    if (process.env.NODE_ENV === 'production' && req.body.seedKey !== 'demo-seed-2025') {
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const sampleUsers = [
+      {
+        username: 'alice_demo',
+        email: 'alice@chatconnect.demo',
+        password: 'password123'
+      },
+      {
+        username: 'bob_demo',
+        email: 'bob@chatconnect.demo',
+        password: 'password123'
+      },
+      {
+        username: 'charlie_demo',
+        email: 'charlie@chatconnect.demo',
+        password: 'password123'
+      },
+      {
+        username: 'diana_demo',
+        email: 'diana@chatconnect.demo',
+        password: 'password123'
+      },
+      {
+        username: 'evan_demo',
+        email: 'evan@chatconnect.demo',
+        password: 'password123'
+      }
+    ];
+
+    // Clear existing demo users
+    await User.deleteMany({ email: { $regex: '@chatconnect.demo$' } });
+
+    // Create sample users
+    const createdUsers = [];
+    for (const userData of sampleUsers) {
+      const user = new User(userData);
+      await user.save();
+      createdUsers.push({
+        id: user._id,
+        username: user.username,
+        email: user.email
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Demo users seeded successfully',
+      users: createdUsers
+    });
+
+  } catch (error) {
+    console.error('Seed users error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error seeding demo users'
+    });
+  }
+});
+
 module.exports = router;

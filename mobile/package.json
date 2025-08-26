@@ -4,7 +4,9 @@
   "description": "ChatConnect - Real-time 1:1 Chat Application",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
+    "start": "npx expo start --offline",
+    "start-online": "expo start",
+    "start-local": "npx expo start --localhost --offline",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
