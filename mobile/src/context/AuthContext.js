@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../config/api';
 import socketService from '../services/socketService';
@@ -51,6 +52,13 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
+      // For web deployment, always start fresh - don't auto-login
+      if (Platform.OS === 'web') {
+        console.log('🌐 Web platform detected - starting fresh without auto-login');
+        dispatch({ type: 'SET_LOADING', payload: false });
+        return;
+      }
+
       const token = await AsyncStorage.getItem('accessToken');
       const userData = await AsyncStorage.getItem('user');
 
@@ -147,18 +155,30 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      console.log('🔐 Attempting logout...');
       // Call logout API
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout API failed:', error);
     } finally {
-      // Clear local storage
-      await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
-      
-      // Disconnect socket
-      socketService.disconnect();
-      
-      dispatch({ type: 'LOGOUT' });
+      try {
+        console.log('🧹 Clearing local storage...');
+        // Clear local storage
+        await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'user']);
+        console.log('✅ Local storage cleared');
+        
+        // Disconnect socket
+        console.log('🔌 Disconnecting socket...');
+        socketService.disconnect();
+        console.log('✅ Socket disconnected successfully');
+        
+        dispatch({ type: 'LOGOUT' });
+        console.log('✅ Logout completed successfully');
+      } catch (clearError) {
+        console.error('❌ Error during logout cleanup:', clearError);
+        // Force logout even if cleanup fails
+        dispatch({ type: 'LOGOUT' });
+      }
     }
   };
 

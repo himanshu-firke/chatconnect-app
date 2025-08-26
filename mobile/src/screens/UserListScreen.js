@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   RefreshControl,
-  Alert,
   TextInput,
+  Alert,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -141,13 +143,39 @@ const UserListScreen = ({ navigation }) => {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    console.log('🔐 Logout button pressed');
+    
+    // For web, skip confirmation dialog and logout directly
+    if (Platform.OS === 'web') {
+      console.log('🌐 Web platform - logging out directly');
+      try {
+        await logout();
+        console.log('✅ Web logout completed');
+      } catch (error) {
+        console.error('❌ Web logout failed:', error);
+      }
+      return;
+    }
+
+    // For mobile, show confirmation dialog
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: logout },
+        { 
+          text: 'Logout', 
+          style: 'destructive', 
+          onPress: async () => {
+            console.log('🔐 User confirmed logout');
+            try {
+              await logout();
+            } catch (error) {
+              console.error('❌ Mobile logout failed:', error);
+            }
+          }
+        },
       ]
     );
   };
@@ -231,7 +259,13 @@ const UserListScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>ChatConnect</Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <TouchableOpacity 
+          onPress={handleLogout} 
+          style={styles.logoutButton}
+          accessible={true}
+          accessibilityLabel="Logout button"
+          testID="logout-button"
+        >
           <Ionicons name="log-out-outline" size={24} color="#e74c3c" />
         </TouchableOpacity>
       </View>

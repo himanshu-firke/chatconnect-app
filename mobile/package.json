@@ -10,7 +10,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build": "mkdir -p web-build && echo '<html><body><h1>ChatConnect</h1><p>React Native app - use mobile version</p></body></html>' > web-build/index.html",
+    "build": "expo export --platform web",
     "eject": "expo eject"
   },
   "keywords": [

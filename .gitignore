@@ -43,6 +43,10 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
+.env.local
+.env.production
+server/.env
+mobile/.env
 
 # IDE files
 .vscode/
@@ -81,3 +85,6 @@ web-build/
 *.db
 *.sqlite
 *.sqlite3
+
+# Local Netlify folder
+.netlify

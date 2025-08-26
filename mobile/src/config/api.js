@@ -1,13 +1,13 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Development URLs - Local backend (temporary fix for Cloudflare issues)
-export const API_BASE_URL = 'http://10.28.125.29:3000/api';
-export const SOCKET_URL = 'http://10.28.125.29:3000';
+// Production URLs - New Render deployment
+export const API_BASE_URL = 'https://chatconnect-backend-u3di.onrender.com/api';
+export const SOCKET_URL = 'https://chatconnect-backend-u3di.onrender.com';
 
-// Production URLs - Render deployment (blocked by Cloudflare)
-// export const API_BASE_URL = 'https://chatconnect-app-j8zm.onrender.com/api';
-// export const SOCKET_URL = 'https://chatconnect-app-j8zm.onrender.com';
+// Development URLs - Local backend (commented out)
+// export const API_BASE_URL = 'http://10.28.125.29:3000/api';
+// export const SOCKET_URL = 'http://10.28.125.29:3000';
 
 console.log('API Configuration:', { API_BASE_URL, SOCKET_URL });
 
