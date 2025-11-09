@@ -57,6 +57,10 @@ web-build/
 *.rar
 *.7z
 
+# Other projects (exclude from ChatConnect repo)
+social-assignment/
+social-network/
+
 # Database
 *.db
 *.sqlite
