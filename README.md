@@ -17,14 +17,14 @@ Quick start: [`QUICK_START_ENHANCED.md`](./QUICK_START_ENHANCED.md)
 ## 📱 Screenshots
 
 ### App Interface
-| Login Screen | User List | Chat Interface |
-|--------------|-----------|----------------|
-| ![Login](screenshots/login-screen.jpg) | ![Users](screenshots/user-list-screen.jpg) | ![Chat](screenshots/chat-screen.jpg) |
+| Login Screen | User List |
+|--------------|-----------|
+| ![Login](screenshots/login-screen.jpg) | ![Users](screenshots/user-list-screen.jpg) |
 
-### Key Features in Action
-| Registration | Message Sent | Message Received |
-|--------------|--------------|------------------|
-| ![Register](screenshots/register-screen.jpg) | ![Sent](screenshots/message-sent.jpg) | ![Received](screenshots/message-received.jpg) |
+### Chat & Registration
+| Chat Interface | Registration |
+|----------------|--------------|
+| ![Chat](screenshots/chat-screen.jpg) | ![Register](screenshots/register-screen.jpg) |
 
 ## 🔗 Live Backend API
 **Backend URL:** https://chatconnect-app-j8zm.onrender.com/api
