@@ -27,7 +27,7 @@ Quick start: [`QUICK_START_ENHANCED.md`](./QUICK_START_ENHANCED.md)
 | ![Chat](screenshots/chat-screen.jpg) | ![Register](screenshots/register-screen.jpg) |
 
 ## 🔗 Live Backend API
-**Backend URL:** https://chatconnect-app-j8zm.onrender.com/api
+**Backend URL:** https://bookit-backend-e7ug.onrender.com/api
 
 ### Demo Login Details
 - **Email:** alice@chatconnect.demo
@@ -36,7 +36,7 @@ Quick start: [`QUICK_START_ENHANCED.md`](./QUICK_START_ENHANCED.md)
 
 ## 🎥 Demo Video
 
-📹 **[Watch Demo Video](https://drive.google.com/file/d/19-fucab8qt__UG12QbpRpL7W2bXmA9U0/preview)** 
+📹 **[Watch Demo Video](https://drive.google.com/file/d/1N9yxuvwHBLeWYymP-xtmOSGPqXpU19EN/view?usp=sharing)** 
 > *Click to play directly in browser - no download required*
 - All features demonstrated
 - Real-time messaging showcase
