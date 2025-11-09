@@ -18,10 +18,22 @@ const userRoutes = require('./routes/users');
 const app = express();
 const server = http.createServer(app);
 
+// Parse allowed origins with proper trimming
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : [
+      "https://chatconnect-app.vercel.app",
+      "http://localhost:3000", 
+      "http://localhost:19006", 
+      "http://localhost:8081"
+    ];
+
+console.log('🌐 Allowed CORS Origins:', allowedOrigins);
+
 // Initialize Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006", "http://10.28.125.29:3000", "http://10.28.125.29:19006"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -37,7 +49,7 @@ app.use(helmet({
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ["http://localhost:3000", "http://localhost:19006", "http://10.28.125.29:3000", "http://10.28.125.29:19006"],
+  origin: allowedOrigins,
   credentials: true
 }));
 
