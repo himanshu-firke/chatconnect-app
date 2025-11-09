@@ -1,19 +1,23 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Development URLs - Local backend
+// Use environment variables for production, fallback to localhost for development
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api';
+export const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || 'http://localhost:3000';
+
+// Development URLs - Local backend (for local testing only)
 // For web/browser: use localhost
 // For physical device/emulator: replace localhost with your computer's IP address (run 'ipconfig' to find it)
-export const API_BASE_URL = 'http://localhost:3000/api';
-export const SOCKET_URL = 'http://localhost:3000';
+// export const API_BASE_URL = 'http://localhost:3000/api';
+// export const SOCKET_URL = 'http://localhost:3000';
 
 // If testing on physical device, use your local IP:
 // export const API_BASE_URL = 'http://192.168.x.x:3000/api';
 // export const SOCKET_URL = 'http://192.168.x.x:3000';
 
-// Production URLs - Render deployment (commented out for development)
-// export const API_BASE_URL = 'https://chatconnect-backend-u3di.onrender.com/api';
-// export const SOCKET_URL = 'https://chatconnect-backend-u3di.onrender.com';
+// Production URLs (set these in Vercel environment variables):
+// EXPO_PUBLIC_API_URL=https://chatconnect-app-j8zm.onrender.com/api
+// EXPO_PUBLIC_SOCKET_URL=https://chatconnect-app-j8zm.onrender.com
 
 console.log('API Configuration:', { API_BASE_URL, SOCKET_URL });
 
