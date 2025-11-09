@@ -67,7 +67,7 @@ const handleConnection = (io) => {
       }
     });
 
-    // Handle sending messages
+    // Handle sending messages (OPTIMIZED)
     socket.on('message:send', async (data) => {
       try {
         const { recipientId, content, messageType = 'text' } = data;
@@ -76,8 +76,8 @@ const handleConnection = (io) => {
           return socket.emit('error', { message: 'Message content is required' });
         }
 
-        // Verify recipient exists
-        const recipient = await User.findById(recipientId);
+        // Quick recipient check (lean query for speed)
+        const recipient = await User.findById(recipientId).select('username').lean();
         if (!recipient) {
           return socket.emit('error', { message: 'Recipient not found' });
         }
@@ -90,30 +90,35 @@ const handleConnection = (io) => {
           messageType
         });
 
+        // Save and populate in parallel for speed
         await message.save();
-        await message.populate('sender', 'username isOnline lastSeen');
-        await message.populate('recipient', 'username isOnline lastSeen');
+        const [populatedMessage] = await Promise.all([
+          Message.findById(message._id)
+            .populate('sender', 'username isOnline lastSeen')
+            .populate('recipient', 'username isOnline lastSeen')
+            .lean(),
+          // Update conversation asynchronously (don't wait)
+          Conversation.findOrCreate(socket.userId, recipientId)
+            .then(conv => conv.updateLastMessage(message._id))
+            .catch(err => console.error('Conversation update error:', err))
+        ]);
 
-        // Update conversation
-        const conversation = await Conversation.findOrCreate(socket.userId, recipientId);
-        await conversation.updateLastMessage(message._id);
-
-        // Send to recipient if online
+        // Send to recipient immediately if online
         const recipientSocket = activeUsers.get(recipientId);
         if (recipientSocket) {
           io.to(recipientSocket.socketId).emit('message:new', {
-            message,
-            conversationId: conversation._id
+            message: populatedMessage
           });
           
-          // Mark as delivered
-          await message.markAsDelivered();
+          // Mark as delivered asynchronously
+          message.markAsDelivered().catch(err => 
+            console.error('Mark delivered error:', err)
+          );
         }
 
-        // Confirm to sender
+        // Confirm to sender immediately
         socket.emit('message:sent', {
-          message,
-          conversationId: conversation._id
+          message: populatedMessage
         });
 
         console.log(`💬 Message sent from ${socket.user.username} to ${recipient.username}`);

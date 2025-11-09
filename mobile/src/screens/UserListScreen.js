@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Alert,
   RefreshControl,
   TextInput,
-  Alert,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
 import socketService from '../services/socketService';
+import AppIcon from '../components/AppIcon';
 
 const UserListScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -52,23 +52,36 @@ const UserListScreen = ({ navigation }) => {
     });
   };
 
-  const updateUserStatus = (userId, isOnline, lastSeen = null) => {
-    setUsers(prevUsers =>
-      prevUsers.map(u =>
-        u._id === userId
-          ? { ...u, isOnline, ...(lastSeen && { lastSeen }) }
-          : u
-      )
-    );
+  const updateUserStatus = useCallback((userId, isOnline, lastSeen = null) => {
+    setUsers(prevUsers => {
+      const userIndex = prevUsers.findIndex(u => u._id === userId);
+      if (userIndex === -1) return prevUsers;
+      
+      const updatedUsers = [...prevUsers];
+      updatedUsers[userIndex] = { 
+        ...updatedUsers[userIndex], 
+        isOnline, 
+        ...(lastSeen && { lastSeen }) 
+      };
+      return updatedUsers;
+    });
 
-    setConversations(prevConversations =>
-      prevConversations.map(conv =>
-        conv.user._id === userId
-          ? { ...conv, user: { ...conv.user, isOnline, ...(lastSeen && { lastSeen }) } }
-          : conv
-      )
-    );
-  };
+    setConversations(prevConversations => {
+      const convIndex = prevConversations.findIndex(conv => conv.user._id === userId);
+      if (convIndex === -1) return prevConversations;
+      
+      const updatedConversations = [...prevConversations];
+      updatedConversations[convIndex] = {
+        ...updatedConversations[convIndex],
+        user: { 
+          ...updatedConversations[convIndex].user, 
+          isOnline, 
+          ...(lastSeen && { lastSeen }) 
+        }
+      };
+      return updatedConversations;
+    });
+  }, []);
 
   const updateConversationWithNewMessage = (message) => {
     setConversations(prevConversations => {
@@ -113,7 +126,10 @@ const UserListScreen = ({ navigation }) => {
   const loadUsers = async () => {
     try {
       const response = await api.get('/users');
-      setUsers(response.data.data.users);
+      const uniqueUsers = response.data.data.users.filter((user, index, self) => 
+        index === self.findIndex(u => u._id === user._id)
+      );
+      setUsers(uniqueUsers);
     } catch (error) {
       console.error('Error loading users:', error);
     }
@@ -180,14 +196,24 @@ const UserListScreen = ({ navigation }) => {
     );
   };
 
-  const filteredUsers = users.filter(u =>
-    u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase();
+    return users
+      .filter(u =>
+        u.username.toLowerCase().includes(searchLower) ||
+        u.email.toLowerCase().includes(searchLower)
+      )
+      .filter((user, index, self) => 
+        index === self.findIndex(u => u._id === user._id)
+      );
+  }, [users, searchQuery]);
 
-  const filteredConversations = conversations.filter(conv =>
-    conv.user.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredConversations = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase();
+    return conversations.filter(conv =>
+      conv.user.username.toLowerCase().includes(searchLower)
+    );
+  }, [conversations, searchQuery]);
 
   const formatLastSeen = (lastSeen) => {
     if (!lastSeen) return '';
@@ -258,14 +284,11 @@ const UserListScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>ChatConnect</Text>
-        <TouchableOpacity 
-          onPress={handleLogout} 
-          style={styles.logoutButton}
-          accessible={true}
-          accessibilityLabel="Logout button"
-          testID="logout-button"
-        >
+        <View style={styles.headerLeft}>
+          <AppIcon size={40} showText={false} />
+          <Text style={styles.headerTitle}>ChatConnect</Text>
+        </View>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Ionicons name="log-out-outline" size={24} color="#e74c3c" />
         </TouchableOpacity>
       </View>
@@ -307,6 +330,11 @@ const UserListScreen = ({ navigation }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        initialNumToRender={15}
+        maxToRenderPerBatch={8}
+        windowSize={8}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons 
@@ -330,7 +358,7 @@ const UserListScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#F8F9FD',
   },
   header: {
     flexDirection: 'row',
@@ -339,14 +367,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     paddingTop: 50,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 0,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#1a1a2e',
+    letterSpacing: -0.5,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   logoutButton: {
     padding: 8,
@@ -354,49 +394,67 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    marginHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
     marginVertical: 16,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    borderWidth: 0,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   searchIcon: {
     marginRight: 12,
+    opacity: 0.6,
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 14,
     fontSize: 16,
-    color: '#2c3e50',
+    color: '#1a1a2e',
+    fontWeight: '500',
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    marginHorizontal: 20,
-    marginBottom: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
+    backgroundColor: '#F0F2F9',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+    padding: 4,
+    borderWidth: 0,
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 14,
     alignItems: 'center',
+    borderRadius: 14,
   },
   activeTab: {
-    backgroundColor: '#3498db',
-    borderRadius: 7,
+    backgroundColor: '#667eea',
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 6,
   },
   tabText: {
-    fontSize: 16,
-    color: '#7f8c8d',
-    fontWeight: '500',
+    fontSize: 15,
+    color: '#6B7280',
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   activeTabText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
   list: {
     flex: 1,
@@ -404,12 +462,21 @@ const styles = StyleSheet.create({
   userItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f3f4',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 0,
+    marginHorizontal: 16,
+    marginVertical: 6,
+    borderRadius: 16,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   userInfo: {
     flexDirection: 'row',
@@ -417,34 +484,49 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#667eea',
     justifyContent: 'center',
-    marginRight: 16,
+    alignItems: 'center',
+    marginRight: 14,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 4,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
   },
   avatarText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   userDetails: {
     flex: 1,
   },
   username: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1a1a2e',
     marginBottom: 4,
+    letterSpacing: -0.2,
   },
   userStatus: {
-    fontSize: 14,
-    color: '#7f8c8d',
+    fontSize: 13,
+    color: '#6B7280',
+    fontWeight: '500',
   },
   lastMessage: {
     fontSize: 14,
-    color: '#7f8c8d',
+    color: '#6B7280',
+    fontWeight: '500',
   },
   conversationMeta: {
     alignItems: 'flex-end',
@@ -455,10 +537,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   onlineIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#27ae60',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#10b981',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   emptyContainer: {
     flex: 1,
@@ -468,10 +552,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#7f8c8d',
+    color: '#6B7280',
     textAlign: 'center',
     marginTop: 16,
     lineHeight: 24,
+    fontWeight: '500',
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import api from '../config/api';
 import socketService from '../services/socketService';
+import AppIcon from '../components/AppIcon';
 
 const ChatScreen = ({ route, navigation }) => {
   const { userId, username, isOnline: initialOnlineStatus, lastSeen } = route.params;
@@ -45,7 +46,7 @@ const ChatScreen = ({ route, navigation }) => {
     };
   }, [userId]);
 
-  const setupSocketListeners = () => {
+  const setupSocketListeners = useCallback(() => {
     socketService.onMessageReceived((data) => {
       if (data.message.sender._id === userId) {
         setMessages(prev => [data.message, ...prev]);
@@ -59,13 +60,18 @@ const ChatScreen = ({ route, navigation }) => {
     });
 
     socketService.onMessageRead((data) => {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg._id === data.messageId
-            ? { ...msg, isRead: true, readAt: data.readAt }
-            : msg
-        )
-      );
+      setMessages(prev => {
+        const messageIndex = prev.findIndex(msg => msg._id === data.messageId);
+        if (messageIndex === -1) return prev;
+        
+        const updatedMessages = [...prev];
+        updatedMessages[messageIndex] = {
+          ...updatedMessages[messageIndex],
+          isRead: true,
+          readAt: data.readAt
+        };
+        return updatedMessages;
+      });
     });
 
     socketService.onTypingStart((data) => {
@@ -92,7 +98,7 @@ const ChatScreen = ({ route, navigation }) => {
         setUserLastSeen(data.lastSeen);
       }
     });
-  };
+  }, [userId]);
 
   const loadMessages = async () => {
     try {
@@ -252,6 +258,11 @@ const ChatScreen = ({ route, navigation }) => {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={renderTypingIndicator}
         onContentSizeChange={() => flatListRef.current?.scrollToOffset({ offset: 0, animated: true })}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
       />
 
       <View style={styles.inputContainer}>
@@ -282,16 +293,24 @@ const ChatScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#F8F9FD',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
+    paddingVertical: 14,
+    paddingTop: 50,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 0,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
   },
   backButton: {
     marginRight: 16,
@@ -301,27 +320,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontSize: 19,
+    fontWeight: '700',
+    color: '#1a1a2e',
+    letterSpacing: -0.3,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: '#7f8c8d',
+    fontSize: 13,
+    color: '#6B7280',
     marginTop: 2,
+    fontWeight: '500',
   },
   onlineIndicator: {
     width: 12,
     height: 12,
     borderRadius: 6,
     marginLeft: 12,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   messagesList: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingTop: 12,
   },
   messageContainer: {
-    marginVertical: 4,
+    marginVertical: 5,
   },
   ownMessage: {
     alignItems: 'flex-end',
@@ -331,36 +355,55 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '80%',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20,
   },
-  ownBubble: {
-    backgroundColor: '#3498db',
-    borderBottomRightRadius: 4,
+  myBubble: {
+    backgroundColor: '#667eea',
+    alignSelf: 'flex-end',
+    borderBottomRightRadius: 6,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 5,
   },
   otherBubble: {
-    backgroundColor: '#fff',
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
+    backgroundColor: '#FFFFFF',
+    alignSelf: 'flex-start',
+    borderBottomLeftRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+    borderWidth: 0,
   },
   typingBubble: {
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#F0F2F9',
   },
   messageText: {
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: '500',
   },
-  ownText: {
-    color: '#fff',
+  myText: {
+    color: '#FFFFFF',
   },
   otherText: {
-    color: '#2c3e50',
+    color: '#1a1a2e',
   },
   typingText: {
-    color: '#7f8c8d',
+    color: '#6B7280',
     fontStyle: 'italic',
+    fontSize: 14,
   },
   messageFooter: {
     flexDirection: 'row',
@@ -369,13 +412,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   timestamp: {
-    fontSize: 12,
+    fontSize: 11,
+    fontWeight: '500',
   },
-  ownTimestamp: {
-    color: 'rgba(255, 255, 255, 0.8)',
+  myTimestamp: {
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   otherTimestamp: {
-    color: '#95a5a6',
+    color: '#9CA3AF',
   },
   deliveryStatus: {
     flexDirection: 'row',
@@ -385,35 +429,59 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingBottom: 36,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e1e8ed',
+    paddingVertical: 14,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 0,
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
   },
   textInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#e1e8ed',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 16,
-    maxHeight: 100,
+    borderWidth: 0,
+    borderRadius: 24,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
     marginRight: 12,
+    maxHeight: 100,
+    fontSize: 16,
+    fontWeight: '500',
+    backgroundColor: '#F0F2F9',
+    color: '#1a1a2e',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   sendButtonActive: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#667eea',
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 5,
   },
   sendButtonInactive: {
-    backgroundColor: '#f1f3f4',
+    backgroundColor: '#E5E7EB',
   },
 });
 

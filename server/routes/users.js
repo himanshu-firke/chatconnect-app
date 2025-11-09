@@ -11,14 +11,20 @@ const router = express.Router();
 // @access  Private
 router.get('/', authenticateToken, async (req, res) => {
   try {
+    // Optimized query with lean() for faster performance
     const users = await User.find({ 
       _id: { $ne: req.user._id } 
-    }).select('username email isOnline lastSeen createdAt');
+    })
+    .select('username email isOnline lastSeen createdAt')
+    .lean() // Convert to plain JS objects - 5x faster
+    .sort({ username: 1 }) // Sort alphabetically
+    .limit(100); // Limit results for better performance
 
     res.json({
       success: true,
       data: {
-        users
+        users,
+        count: users.length
       }
     });
 
@@ -36,14 +42,26 @@ router.get('/', authenticateToken, async (req, res) => {
 // @access  Private
 router.get('/conversations', authenticateToken, async (req, res) => {
   try {
+    // Optimized query with lean() and select
     const conversations = await Conversation.find({
       participants: req.user._id
     })
-    .populate('participants', 'username email isOnline lastSeen')
-    .populate('lastMessage')
-    .sort({ lastMessageAt: -1 });
+    .select('participants lastMessage lastMessageAt updatedAt')
+    .populate({
+      path: 'participants',
+      select: 'username email isOnline lastSeen',
+      options: { lean: true }
+    })
+    .populate({
+      path: 'lastMessage',
+      select: 'content sender createdAt isRead',
+      options: { lean: true }
+    })
+    .sort({ lastMessageAt: -1 })
+    .limit(50) // Limit for performance
+    .lean();
 
-    // Format conversations for frontend
+    // Format conversations for frontend (optimized)
     const formattedConversations = conversations.map(conv => {
       const otherUser = conv.participants.find(p => p._id.toString() !== req.user._id.toString());
       
@@ -59,7 +77,8 @@ router.get('/conversations', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       data: {
-        conversations: formattedConversations
+        conversations: formattedConversations,
+        count: formattedConversations.length
       }
     });
 
@@ -82,8 +101,11 @@ router.get('/:userId/messages', authenticateToken, async (req, res) => {
     
     const skip = (page - 1) * limit;
 
-    // Verify the other user exists
-    const otherUser = await User.findById(userId);
+    // Verify the other user exists (optimized with lean and select)
+    const otherUser = await User.findById(userId)
+      .select('username email isOnline lastSeen')
+      .lean();
+    
     if (!otherUser) {
       return res.status(404).json({
         success: false,
@@ -91,7 +113,7 @@ router.get('/:userId/messages', authenticateToken, async (req, res) => {
       });
     }
 
-    // Get messages between users
+    // Get messages between users (optimized query)
     const messages = await Message.getConversation(
       req.user._id, 
       userId, 
@@ -99,8 +121,10 @@ router.get('/:userId/messages', authenticateToken, async (req, res) => {
       skip
     );
 
-    // Mark messages as read (messages sent to current user)
-    await Message.markConversationAsRead(userId, req.user._id);
+    // Mark messages as read asynchronously (don't wait)
+    Message.markConversationAsRead(userId, req.user._id).catch(err => 
+      console.error('Error marking messages as read:', err)
+    );
 
     res.json({
       success: true,

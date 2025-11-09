@@ -20,16 +20,24 @@ class SocketService {
         auth: {
           token
         },
-        transports: ['websocket'],
+        transports: ['websocket', 'polling'], // Add polling as fallback
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
+        timeout: 10000, // 10 second timeout
       });
 
       this.setupEventHandlers();
       
       return new Promise((resolve, reject) => {
+        // Set a timeout to resolve even if connection takes too long
+        const timeout = setTimeout(() => {
+          console.log('⚠️ Socket connection timeout, but continuing...');
+          resolve(); // Resolve anyway to not block the app
+        }, 5000); // 5 second timeout
+
         this.socket.on('connect', () => {
+          clearTimeout(timeout);
           console.log('✅ Socket connected');
           this.isConnected = true;
           resolve();
@@ -38,12 +46,15 @@ class SocketService {
         this.socket.on('connect_error', (error) => {
           console.error('❌ Socket connection error:', error);
           this.isConnected = false;
-          reject(error);
+          // Don't reject, just log the error
+          clearTimeout(timeout);
+          resolve(); // Resolve anyway to not block the app
         });
       });
     } catch (error) {
       console.error('Socket connection failed:', error);
-      throw error;
+      // Don't throw, just log the error
+      return Promise.resolve();
     }
   }
 

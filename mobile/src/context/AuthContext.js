@@ -66,12 +66,10 @@ export const AuthProvider = ({ children }) => {
         const user = JSON.parse(userData);
         dispatch({ type: 'LOGIN_SUCCESS', payload: { user } });
         
-        // Connect socket
-        try {
-          await socketService.connect();
-        } catch (socketError) {
-          console.error('Socket connection failed:', socketError);
-        }
+        // Connect socket (non-blocking)
+        socketService.connect().catch(socketError => {
+          console.error('⚠️ Socket connection failed on auto-login:', socketError);
+        });
       } else {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
@@ -103,8 +101,10 @@ export const AuthProvider = ({ children }) => {
       console.log('✅ Tokens stored successfully');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user } });
 
-      // Connect socket
-      await socketService.connect();
+      // Connect socket (non-blocking - don't wait for it)
+      socketService.connect().catch(error => {
+        console.error('⚠️ Socket connection failed, but login succeeded:', error);
+      });
 
       return { success: true };
     } catch (error) {
@@ -141,8 +141,10 @@ export const AuthProvider = ({ children }) => {
       console.log('✅ Tokens stored successfully');
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user } });
 
-      // Connect socket
-      await socketService.connect();
+      // Connect socket (non-blocking - don't wait for it)
+      socketService.connect().catch(error => {
+        console.error('⚠️ Socket connection failed, but registration succeeded:', error);
+      });
 
       return { success: true };
     } catch (error) {

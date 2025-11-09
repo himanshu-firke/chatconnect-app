@@ -1,0 +1,268 @@
+Product Requirements Document (PRD)
+Project: AI-Powered Social Media Scheduler
+Hackathon: Humanity Founders – Internship Selection Challenge
+🎯 Objective
+
+Develop a full-stack AI-powered social media management platform that enables individuals and businesses to:
+
+Connect their Twitter/X, LinkedIn, and Instagram accounts.
+
+Generate personalized, human-like content using AI.
+
+Schedule posts via a calendar interface with drag-and-drop support.
+
+Automate cross-platform publishing through APIs.
+
+Gain insights through analytics and AI-driven recommendations.
+
+The goal is to create a platform that is user-friendly, reliable, and unique with AI features beyond basic automation.
+
+🌟 Uniqueness (How We Stand Out)
+
+Most participants will build a simple scheduler. Our project stands out with:
+
+Tone Control AI Chatbot
+
+Users can select tone → Professional, Friendly, Funny, Formal.
+
+AI generates content adapted to tone.
+
+Best Time to Post (AI-powered)
+
+AI suggests optimal posting times based on industry.
+
+Hashtag Generator
+
+AI automatically suggests relevant hashtags for higher reach.
+
+Analytics Dashboard
+
+Visual reports (likes, comments, shares).
+
+AI insights: “Posts at 6pm get 20% more engagement.”
+
+Drag-and-Drop Calendar
+
+Move posts visually to reschedule.
+
+Team Collaboration (Optional)
+
+Add multiple users to one account with roles.
+
+📌 Features & Requirements
+1. User Authentication & Social Account Linking
+
+Email/password login (JWT).
+
+Social media OAuth (Twitter/X, LinkedIn, Instagram).
+
+Secure token storage in DB, auto-refresh on expiry.
+
+2. AI Chatbot for Content Creation
+
+Powered by Google Gemini API.
+
+Context-aware to generate relevant posts.
+
+Supports multiple tones and content types (text, image, video).
+
+Auto-adaptation per platform.
+
+3. Content Calendar & Scheduling
+
+Interactive FullCalendar.js interface.
+
+Drag-and-drop rescheduling.
+
+Edit posts before publishing.
+
+Smart AI-based scheduling suggestions.
+
+4. Posting Automation
+
+Automated scheduling and publishing using node-cron.
+
+Posts saved in DB with datetime, platform, content, and tokens.
+
+Background worker triggers post at scheduled time.
+
+API calls:
+
+Twitter/X: POST /2/tweets
+
+LinkedIn: POST /ugcPosts
+
+Instagram: Upload media → POST /me/media_publish
+
+Handles API limits, retries, and logs errors.
+
+5. Error Handling & Logging
+
+Token refresh on expiry.
+
+Retry failed posts with exponential backoff.
+
+Dashboard notifications for errors.
+
+Logs of published/failed posts.
+
+6. Dashboard
+
+Overview of connected accounts.
+
+List of scheduled and published posts.
+
+Engagement analytics.
+
+Previews of how posts appear on each platform.
+
+🔄 Simple Flow of Social Media Post Automation
+
+User Connects Accounts
+
+Logs in and connects Twitter, LinkedIn, Instagram via OAuth 2.0.
+
+Backend stores access tokens securely.
+
+User Creates a Post
+
+Types content or uses AI chatbot (Gemini) to generate.
+
+Can add images/videos via upload or AI/stock APIs.
+
+Selects platforms to post on.
+
+User Schedules the Post
+
+Picks date & time in calendar interface.
+
+Post stored in DB with content, datetime, platforms, tokens.
+
+Scheduler Runs
+
+Background worker (node-cron) checks DB every minute.
+
+Triggers post when scheduled time arrives.
+
+API Posting
+
+Twitter/X: POST /2/tweets
+
+LinkedIn: POST /ugcPosts
+
+Instagram: Upload media → POST /me/media_publish
+
+Confirmation & Logging
+
+API responds with success/failure.
+
+Success → Mark as “Published” in DB.
+
+Failure → Log + retry + notify user.
+
+User Dashboard
+
+Shows upcoming scheduled posts, published posts, and failed posts with error messages.
+
+Super Short Summary:
+
+User links account → tokens saved.
+
+User creates/schedules post → saved in DB.
+
+Scheduler checks DB → sends API call at correct time.
+
+API publishes post → success/failure logged.
+
+User sees result in dashboard.
+
+🛠️ Tech Stack
+Frontend
+
+React.js + TailwindCSS
+
+FullCalendar.js
+
+Chart.js / Recharts
+
+Backend
+
+Node.js + Express
+
+node-cron (scheduling automation)
+
+OAuth 2.0 for social logins
+
+Database
+
+MongoDB Atlas Free Tier
+
+AI & Media APIs
+
+Google Gemini API (text generation)
+
+Stable Diffusion / Unsplash API (images)
+
+Pexels API (optional videos)
+
+Social APIs
+
+Twitter API v2
+
+LinkedIn UGC API
+
+Instagram Graph API
+
+Hosting
+
+Frontend → Vercel
+
+Backend → Render
+
+Database → MongoDB Atlas
+
+🚀 Development Roadmap
+
+MVP
+
+OAuth login for social platforms
+
+AI chatbot for content generation
+
+Calendar scheduling (drag & drop)
+
+node-cron automation → posting
+
+Enhanced Features
+
+Smart scheduling suggestions
+
+Hashtag & emoji recommendations
+
+Post previews for each platform
+
+Analytics dashboard
+
+Future Expansion
+
+Team collaboration
+
+More social platforms
+
+Advanced analytics
+
+✅ Deliverables
+
+Full stack application (frontend + backend)
+
+OAuth-based social media linking
+
+AI-powered content creation
+
+Calendar interface with drag-drop scheduling
+
+Automated posting using node-cron
+
+Analytics dashboard and post previews
+
+Deployment + documentation + demo video
